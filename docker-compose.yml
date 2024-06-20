@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6.0
+    ports: 
+    - "6379:6379"
+  openmatch-query:
+    image: gcr.io/open-match-public-images/openmatch-query:1.8.1
+    depends_on:
+    - redis
+    ports:
+    - "50503"
+    volumes:
+    - ./default_config.yaml:/app/config/default/matchmaker_config_default.yaml
+    - ./override_config.yaml:/app/config/override/matchmaker_config_override.yaml
+  openmatch-frontend: 
+    image: gcr.io/open-match-public-images/openmatch-frontend:1.8.1
+    depends_on:
+    - redis 
+    ports: 
+    - "50504:50504" 
+    volumes:
+      - ./default_config.yaml:/app/config/default/matchmaker_config_default.yaml
+      - ./override_config.yaml:/app/config/override/matchmaker_config_override.yaml  
+  openmatch-backend: 
+    image: gcr.io/open-match-public-images/openmatch-backend:1.8.1
+    depends_on: 
+    - redis 
+    ports: 
+    - "50505:50505"
+    volumes:
+      - ./default_config.yaml:/app/config/default/matchmaker_config_default.yaml
+      - ./override_config.yaml:/app/config/override/matchmaker_config_override.yaml  
+  openmatch-mmlogic: 
+    build:
+      context: ./matchfunction
+      dockerfile: Dockerfile
+    ports: 
+    - "50502:50502" 
+    environment: 
+    - REDIS_ADDRESS=redis:6379 
+  openmatch-evaluator:
+    image: gcr.io/open-match-public-images/openmatch-default-evaluator:1.8.1
+    depends_on:
+    - openmatch-backend
+    ports:
+    - "50508:50508"
+    volumes:
+      - ./default_config.yaml:/app/config/default/matchmaker_config_default.yaml
+      - ./override_config.yaml:/app/config/override/matchmaker_config_override.yaml
+  openmatch-director: 
+    build:
+      context: ./director
+      dockerfile: Dockerfile
+    depends_on: 
+    - redis 
+    - openmatch-frontend 
+    - openmatch-backend 
+    - openmatch-mmlogic 
+    ports: 
+    - "50507:50507" 
+  openmatch-synchronizer:
+    image: gcr.io/open-match-public-images/openmatch-synchronizer:1.8.1
+    volumes:
+      - ./default_config.yaml:/app/config/default/matchmaker_config_default.yaml
+      - ./override_config.yaml:/app/config/override/matchmaker_config_override.yaml
+    ports:
+      - 50506:50506
+  game-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile

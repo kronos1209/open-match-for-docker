@@ -1,0 +1,5 @@
+api:
+  evaluator:
+    hostname: openmatch-evaluator
+    grpcport: 50508
+    httpport: 51508

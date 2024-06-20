@@ -1,0 +1,3 @@
+[submodule "open-match"]
+	path = open-match
+	url = https://github.com/googleforgames/open-match

@@ -1,0 +1,56 @@
+
+# Open Match applies the exponential backoff strategy for its retryable gRPC calls.
+# The settings below are the default backoff configuration used in Open Match.
+# See https://github.com/cenkalti/backoff/blob/v3/exponential.go for detailed explanations
+backoff:
+  # The initial retry interval (in milliseconds)
+  initialInterval: 100ms
+  # maxInterval caps the maximum time elapsed for a retry interval
+  maxInterval: 500ms
+  # The next retry interval is multiplied by this multiplier
+  multiplier: 1.5
+  # Randomize the retry interval
+  randFactor: 0.5
+  # maxElapsedTime caps the retry time (in milliseconds)
+  maxElapsedTime: 3000ms
+
+api:
+  backend:
+    hostname: openmatch-backend
+    grpcport: 50505
+    httpport: 51505
+  frontend:
+    hostname: openmatch-frontend
+    grpcport: 50504
+    httpport: 51504
+  query:
+    hostname: openmatch-query
+    grpcport: 50503
+    httpport: 51503
+  synchronizer:
+    hostname: openmatch-synchronizer
+    grpcport: 50506
+    httpport: 51506
+  swaggerui:
+    hostname: swaggerui
+    httpport: 51500
+redis:
+  hostname: redis
+  port: 6379
+  user:
+  usePassword:
+  passwordPath:
+  pool:
+    maxIdle: 200
+    maxActive: 0
+    idleTimeout: 0
+    healthCheckTimeout: 300ms
+telemetry:
+  reportingPeriod: "1m"
+  traceSamplingFraction: 0.01
+  zpages: false
+  prometheus: false
+  stackdriverMetrics:
+    enable: false
+    gcpProjectId: ""
+    prefix: ""
